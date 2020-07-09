@@ -6,8 +6,28 @@ stacey = User.create({ username: "stacey" })
 bob = User.create({ username: "bob" })
 jaime = User.create({ username: "jaime" })
 
-Beverage.create({ title: "aviation", strength: 4, user: jojo })
-Beverage.create({ title: "long island", strength: 5, user: stacey })
-Beverage.create({ title: "amf", strength: 5, user: bob })
-Beverage.create({ title: "beer", strength: 3, user: jaime })
-Beverage.create({ title: "wine", strength: 2, user: jaime })
+Beverage.create({
+  name: "aviation",
+  strength: 4,
+  user: jojo
+})
+Beverage.create({
+  name: "long island",
+  strength: 5,
+  user: stacey
+})
+Beverage.create({
+  name: "amf",
+  strength: 5,
+  user: bob
+})
+Beverage.create({
+  name: "beer",
+  strength: 3,
+  user: jaime
+})
+Beverage.create({
+  name: "wine",
+  strength: 2,
+  user: jaime
+})
