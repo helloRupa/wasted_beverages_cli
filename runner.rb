@@ -4,8 +4,8 @@ app = Cli.new
 
 binding.pry
 
-app.welcome
+# app.welcome
 
-app.sign_up_or_sign_in
+# app.sign_up_or_sign_in
 
-app.display_beverages
+# app.display_beverages
