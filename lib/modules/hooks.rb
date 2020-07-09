@@ -15,7 +15,9 @@ module Hooks
     to_prepend = Module.new do
       method_names.each do |name|
         define_method(name) do |*args, &block|
+          
           App.banner
+          
           super(*args, &block)
         end
       end
