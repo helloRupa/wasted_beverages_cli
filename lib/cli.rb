@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require_relative './modules/hooks'
 
+# Cli class to hold app logic
 class Cli
   extend Hooks
 
@@ -51,13 +54,17 @@ class Cli
   def sign_up_or_log_in
     is_new_user = $prompt.yes?('First timer?')
     is_new_user ? sign_up : log_in
+    progress_bar('Pouring')
   end
 
   def sign_up
-    username = $prompt.ask('Enter your username?', default: 'Guest') do |q|
-      q.modify :strip
+    loop do
+      username = $prompt.ask('Enter your username?', default: 'Guest') do |q|
+        q.modify :strip
+      end
+      $user = username == 'Guest' ? User.log_in_guest : User.make(username)
+      break if $user.is_a?(User) || puts($user[:error].red)
     end
-    $user = username === "Guest" ? User.log_in_guest : User.make(username)
   end
 
   def log_in
@@ -68,25 +75,34 @@ class Cli
   end
 
   def display_beverages
-    progress_bar('Pouring')
     $prompt.say('Craft your beverage', color: :cyan)
-    beverage = $prompt.collect do
-      key(:name).ask('Name?', required: true)
-      key(:strength).ask(
-        "Strength 1-5?",
-        required: true, 
-        convert: :int
-      ) { |q| q.in('1-5') }
-    end
-    beverage['user'] = $user
-    new_beverage = Beverage.create(beverage)
+    new_beverage_info = prompt_collect_new_beverage_info
+    new_beverage_info['user'] = $user
+    new_beverage = Beverage.create(new_beverage_info)
     # beverage = $prompt.select('Pick your poison', filter: true) do |menu|
     #   menu.choices Beverage.choices
     #   menu.per_page 10
     # end
-
     binding.pry
   end
 
-  before(instance_methods(false))
+  def prompt_collect_new_beverage_info
+    $prompt.collect do
+      key(:name).ask('Name?', required: true)
+      key(:strength).ask(
+        'Strength 1-5?',
+        required: true,
+        convert: :int
+      ) { |q| q.in('1-5') }
+    end
+  end
+
+  # before(instance_methods(false))
+  before(
+    %i[
+      welcome
+      sign_up_or_log_in
+      display_beverages
+    ]
+  )
 end

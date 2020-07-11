@@ -1,5 +1,6 @@
-ActiveRecord::Schema.define(version: 2020_07_08_224324) do
+# frozen_string_literal: true
 
+ActiveRecord::Schema.define(version: 2020_07_08_224324) do
   create_table "beverages", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false

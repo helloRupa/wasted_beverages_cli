@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
+# user class
 class User < ActiveRecord::Base
   has_many :beverages
 
-  validates :username, presence: true, uniqueness: true
+  validates :username, presence: true, uniqueness: { case_sensitive: false }
 
   def self.log_in_guest
-    User.find_or_create_by(username: "Guest")
+    User.find_or_create_by(username: 'Guest')
   end
 
   def self.make(username)
     user = User.create(username: username)
     error = user.errors.full_messages.first
-    print error ? error.red : ''
-    user unless error
+    error ? { error: error } : user
   end
 
   def self.choices

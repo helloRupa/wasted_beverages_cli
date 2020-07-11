@@ -10,6 +10,7 @@
 #   end
 # end
 
+# hooks module for Cli wide functionality
 module Hooks
   def before(method_names)
     to_prepend = Module.new do
