@@ -13,8 +13,7 @@ class User < ActiveRecord::Base
   def self.make(username)
     user = User.create(username: username)
     error = user.errors.full_messages.first
-    print error ? error.red : ''
-    error || user
+    error ? { error: error } : user
   end
 
   def self.choices

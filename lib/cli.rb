@@ -63,7 +63,7 @@ class Cli
         q.modify :strip
       end
       $user = username == 'Guest' ? User.log_in_guest : User.make(username)
-      break if $user.is_a?(User) || puts('')
+      break if $user.is_a?(User) || puts($user[:error].red)
     end
   end
 
