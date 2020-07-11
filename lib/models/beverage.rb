@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# beverage class
 class Beverage < ActiveRecord::Base
   belongs_to :user
 
