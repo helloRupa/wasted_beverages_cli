@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# migration to create beverages table
 class CreateBeveragesTable < ActiveRecord::Migration[6.0]
   def change
     create_table :beverages do |t|

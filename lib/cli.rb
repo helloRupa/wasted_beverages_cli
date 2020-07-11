@@ -54,6 +54,7 @@ class Cli
   def sign_up_or_log_in
     is_new_user = $prompt.yes?('First timer?')
     is_new_user ? sign_up : log_in
+    progress_bar('Pouring')
   end
 
   def sign_up
@@ -71,7 +72,6 @@ class Cli
   end
 
   def display_beverages
-    progress_bar('Pouring')
     $prompt.say('Craft your beverage', color: :cyan)
     new_beverage_info = prompt_collect_new_beverage_info
     new_beverage_info['user'] = $user
@@ -94,5 +94,12 @@ class Cli
     end
   end
 
-  before(instance_methods(false))
+  # before(instance_methods(false))
+  before(
+    %i[
+      welcome
+      sign_up_or_log_in
+      display_beverages
+    ]
+  )
 end
