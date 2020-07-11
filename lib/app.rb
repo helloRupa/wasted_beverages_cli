@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# app wide methods
+# reusable app wide methods
 class App
   def self.banner
     banner = TTY::Box.frame(*banner_options) { banner_text }

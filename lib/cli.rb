@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require_relative './modules/hooks'
 
+# Cli class to hold app logic
 class Cli
   extend Hooks
 
@@ -57,7 +60,7 @@ class Cli
     username = $prompt.ask('Enter your username?', default: 'Guest') do |q|
       q.modify :strip
     end
-    $user = username === "Guest" ? User.log_in_guest : User.make(username)
+    $user = username == 'Guest' ? User.log_in_guest : User.make(username)
   end
 
   def log_in
@@ -70,22 +73,25 @@ class Cli
   def display_beverages
     progress_bar('Pouring')
     $prompt.say('Craft your beverage', color: :cyan)
-    beverage = $prompt.collect do
-      key(:name).ask('Name?', required: true)
-      key(:strength).ask(
-        "Strength 1-5?",
-        required: true, 
-        convert: :int
-      ) { |q| q.in('1-5') }
-    end
-    beverage['user'] = $user
-    new_beverage = Beverage.create(beverage)
+    new_beverage_info = prompt_collect_new_beverage_info
+    new_beverage_info['user'] = $user
+    new_beverage = Beverage.create(new_beverage_info)
     # beverage = $prompt.select('Pick your poison', filter: true) do |menu|
     #   menu.choices Beverage.choices
     #   menu.per_page 10
     # end
-
     binding.pry
+  end
+
+  def prompt_collect_new_beverage_info
+    $prompt.collect do
+      key(:name).ask('Name?', required: true)
+      key(:strength).ask(
+        'Strength 1-5?',
+        required: true,
+        convert: :int
+      ) { |q| q.in('1-5') }
+    end
   end
 
   before(instance_methods(false))
