@@ -58,10 +58,13 @@ class Cli
   end
 
   def sign_up
-    username = $prompt.ask('Enter your username?', default: 'Guest') do |q|
-      q.modify :strip
+    loop do
+      username = $prompt.ask('Enter your username?', default: 'Guest') do |q|
+        q.modify :strip
+      end
+      $user = username == 'Guest' ? User.log_in_guest : User.make(username)
+      break if $user.is_a?(User) || puts('')
     end
-    $user = username == 'Guest' ? User.log_in_guest : User.make(username)
   end
 
   def log_in
