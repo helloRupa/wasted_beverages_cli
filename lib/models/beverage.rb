@@ -9,8 +9,15 @@ class Beverage < ActiveRecord::Base
 
   validates :name, presence: true
 
-  def self.choices
-    Beverage.all.reduce([]) do |choices, beverage|
+  scope :contains, (lambda do |alcohols|
+    distinct
+      .joins(:beverage_alcohols)
+      .where(beverage_alcohols: { alcohol: alcohols })
+      .order(:name)
+  end)
+
+  def self.choices(beverages = Beverage.all)
+    beverages.reduce([]) do |choices, beverage|
       choices << { name: beverage.name, value: beverage }
     end
   end

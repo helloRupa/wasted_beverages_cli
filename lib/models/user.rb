@@ -16,8 +16,8 @@ class User < ActiveRecord::Base
     error ? { error: error } : user
   end
 
-  def self.choices
-    User.all.reduce([]) do |choices, user|
+  def self.choices(users = User.all)
+    users.reduce([]) do |choices, user|
       choices << { name: user.username, value: user }
     end
   end
