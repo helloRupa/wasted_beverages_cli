@@ -2,12 +2,13 @@
 
 # beverage class
 class Beverage < ActiveRecord::Base
-  belongs_to :user
+  has_many :user_beverages
+  has_many :users, through: :user_beverages
 
   has_many :beverage_alcohols
   has_many :alcohols, through: :beverage_alcohols
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   scope :contains, (lambda do |alcohols|
     distinct

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# migration to create join table for beverages and alcohol
+# migration to create join table for beverages and alcohols
 class CreateBeverageAlcohols < ActiveRecord::Migration[6.0]
   def change
     create_table :beverage_alcohols do |t|

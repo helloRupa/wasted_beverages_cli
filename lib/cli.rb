@@ -102,13 +102,16 @@ class Cli
   end
 
   def select_beverage
-    selected_beverage = prompt_select(
-      'Select 1 to see more',
-      Beverage.choices(Beverage.contains(@alcohols))
-    )
-    display_beverage(selected_beverage)
-
-    binding.pry
+    loop do
+      selected_beverage = prompt_select(
+        'Select 1 to see more',
+        Beverage.choices(Beverage.contains(@alcohols))
+      )
+      display_beverage(selected_beverage)
+      is_add = prompt.yes?('Add to collection?')
+      result = is_add ? @user.add_to_collection(selected_beverage) : select_again?
+      break if result.message ? !puts(result.message.green) : puts(result.error.red)
+    end
   end
 
   def display_beverage(beverage)
