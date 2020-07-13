@@ -12,6 +12,6 @@ class Alcohol < ActiveRecord::Base
     choices = alcohols_by_kind.reduce([]) do |options, alcohol|
       options << { name: alcohol.kind, value: alcohol }
     end
-    choices << [{ name: 'Select all', value: alcohols_by_kind }]
+    choices << { name: 'Select all', value: alcohols_by_kind }
   end
 end
