@@ -36,7 +36,7 @@ class Cli
     )
   end
 
-  def setup
+  def initialize
     @user = nil
     @prompt = tty_prompt
     @spinner = tty_spinner
@@ -68,6 +68,10 @@ class Cli
     @prompt.select(prompt, choices, per_page: 5, filter: true)
   end
 
+  def prompt_select_yes?(prompt)
+    prompt_select(prompt, yes: true, no: false)
+  end
+
   def prompt_multi_select(prompt, choices)
     @prompt.multi_select(prompt, choices, min: 1, per_page: 5, filter: true)
   end
@@ -77,7 +81,7 @@ class Cli
   end
 
   def sign_up_or_log_in
-    is_new_user = @prompt.yes?('First timer?')
+    is_new_user = prompt_select_yes?('First timer?')
     is_new_user ? sign_up : log_in
     progress_bar('Pouring')
   end
@@ -94,53 +98,98 @@ class Cli
     @user = prompt_select('Select yourself', User.choices)
   end
 
+  def main_menu
+    loop do
+      value = prompt_select('What would you like to do?', menu_options)
+      break if value == 'exit'
+    end
+  end
+
+  def menu_options
+    {
+      # "select alcohols": method(:select_alcohols).(),
+      "select alcohols": -> { select_alcohols },
+      "select beverage": -> { select_beverage },
+      "craft beverage": -> { craft_beverage },
+      "exit": -> { exit_app }
+    }
+  end
+
   def select_alcohols
     @alcohols = prompt_multi_select(
       'Choose your favorite alcohol(s)',
       Alcohol.choices
-    )
+    ).flatten.uniq
   end
 
   def select_beverage
-    loop do
-      selected_beverage = prompt_select(
-        'Select 1 to see more',
-        Beverage.choices(Beverage.contains(@alcohols))
-      )
-      display_beverage(selected_beverage)
-      is_add = prompt.yes?('Add to collection?')
-      result = is_add ? @user.add_to_collection(selected_beverage) : select_again?
-      break if result.message ? !puts(result.message.green) : puts(result.error.red)
-    end
+    @alcohols ? display_alcohols : no_alcohols_selected
+    @selected_beverage = prompt_select(
+      'Select 1 to see more',
+      Beverage.choices(Beverage.contains(@alcohols || Alcohol.all))
+    )
+    display_beverage
+    is_add = prompt_select_yes?('Add to collection?')
+    add_to_collection if is_add
   end
 
-  def display_beverage(beverage)
-    beverage.alcohols.each.with_index(1) do |alcohol, index|
+  def display_alcohols
+    alcohols = @alcohols.map(&:kind)
+    list = "#{alcohols[0...-1].join(', ')}, or #{alcohols.last}"
+    puts "Showing beverages containing #{list.light_cyan}"
+  end
+
+  def no_alcohols_selected
+    puts 'No alcohols selected, showing all beverages'.cyan
+  end
+
+  def display_beverage
+    @selected_beverage.alcohols.each.with_index(1) do |alcohol, index|
       puts "#{index}) #{alcohol.kind.yellow}"
     end
   end
 
-  def display_beverages
+  def add_to_collection
+    result = @user.add_to_collection(@selected_beverage)
+    puts result[:message] ? result[:message].green : result[:error].red
+    is_select_another = prompt_select_yes?('Add another?')
+    select_beverage if is_select_another
+  end
+
+  def craft_beverage?
+    is_craft_your_own = prompt_select_yes?('Craft your own beverage?')
+    craft_beverage if is_craft_your_own
+  end
+
+  def craft_beverage
     @prompt.say('Craft your beverage', color: :cyan)
     new_beverage_info = prompt_collect_new_beverage_info
-    new_beverage_info['user'] = @user
+    new_beverage_info[:users] = [@user]
     new_beverage = Beverage.create(new_beverage_info)
-    # beverage = @prompt.select('Pick your poison', filter: true) do |menu|
-    #   menu.choices Beverage.choices
-    #   menu.per_page 10
-    # end
-    binding.pry
+    error = new_beverage.errors.full_messages.first
+    success = %(\
+    #{new_beverage.name} successfully crafted and added to your collection\
+    )
+    puts error ? error.red : success.cyan
   end
 
   def prompt_collect_new_beverage_info
     @prompt.collect do
       key(:name).ask('Name?', required: true)
       key(:strength).ask(
-        'Strength 1-5?',
-        required: true,
-        convert: :int
+        'Strength 1-5?', required: true, convert: :int
       ) { |q| q.in('1-5') }
+      key(:alcohols).multi_select(
+        'Choose the poison(s)', Alcohol.choices,
+        min: 1, per_page: 5, filter: true
+      )
     end
+  end
+
+  def exit_app
+    App.exit
+    puts 'Go drunk you\'re home!'.cyan
+    'exit'
   end
 
   # before(instance_methods(false))
@@ -148,7 +197,10 @@ class Cli
     %i[
       welcome
       sign_up_or_log_in
-      display_beverages
+      main_menu
+      select_alcohols
+      select_beverage
+      craft_beverage
     ]
   )
 end

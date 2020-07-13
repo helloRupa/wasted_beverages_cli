@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
 
   def add_to_collection(beverage)
     user_beverage = UserBeverage.create(user: self, beverage: beverage)
-    error = user_beverage.errors.full_messages.first
-    error ? { error: error } : { message: 'success' }
+    error = user_beverage.errors[:user].first unless user_beverage.valid?
+    error ? { error: error } : { message: 'Successfuly added' }
   end
 end

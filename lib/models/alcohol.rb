@@ -8,8 +8,10 @@ class Alcohol < ActiveRecord::Base
   validates :kind, presence: true, uniqueness: { case_sensitive: false }
 
   def self.choices(alcohols = Alcohol.all)
-    alcohols.reduce([]) do |choices, alcohol|
-      choices << { name: alcohol.kind, value: alcohol }
+    alcohols_by_kind = alcohols.order(:kind)
+    choices = alcohols_by_kind.reduce([]) do |options, alcohol|
+      options << { name: alcohol.kind, value: alcohol }
     end
+    choices << [{ name: 'Select all', value: alcohols_by_kind }]
   end
 end

@@ -2,10 +2,18 @@
 
 # reusable app wide methods
 class App
-  def self.banner
-    banner = TTY::Box.frame(*banner_options) { banner_text }
+  def self.header(text = banner_text)
+    banner = TTY::Box.frame(*banner_options) { text }
     system 'clear'
     print "#{banner}\n"
+  end
+
+  def self.banner
+    header(banner_text)
+  end
+
+  def self.exit
+    header(exit_text)
   end
 
   def self.banner_options
@@ -47,6 +55,21 @@ class App
          \\/  \\/ \\__,_|___/\\__\\___|\\__,_| \\____/ \\___| \\_/ \\___|_|  \\__,_|\\__, |\\___||___/
                                                                           __/ |          
                                                                          |___/           
+    "
+  end
+
+  def self.exit_text
+    "\
+                          _                    
+                         {_}                   
+                         |(|                   
+                         |=|        .    ' .   
+                      /   \\     '     \\~~~/
+      C H E E R S !   |.--|    \\~~~/   \\_/ 
+                      ||  |     \\_/     Y   
+                        ||  |      Y     _|_   
+                        |'--|     _|_          
+                        '-=-'                  
     "
   end
 end
