@@ -156,20 +156,18 @@ class Cli
     select_beverage if is_select_another
   end
 
-  def craft_beverage?
-    is_craft_your_own = prompt_select_yes?('Craft your own beverage?')
-    craft_beverage if is_craft_your_own
-  end
-
   def craft_beverage
     @prompt.say('Craft your beverage', color: :cyan)
     new_beverage_info = prompt_collect_new_beverage_info
     new_beverage_info[:users] = [@user]
     new_beverage = Beverage.create(new_beverage_info)
+    display_success_or_error(new_beverage)
+  end
+
+  def display_success_or_error(new_beverage)
+    success_message = 'successfully crafted and added to your collection'
+    success = "#{new_beverage.name} #{success_message}"
     error = new_beverage.errors.full_messages.first
-    success = %(\
-    #{new_beverage.name} successfully crafted and added to your collection\
-    )
     puts error ? error.red : success.cyan
   end
 
