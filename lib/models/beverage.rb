@@ -2,12 +2,23 @@
 
 # beverage class
 class Beverage < ActiveRecord::Base
-  belongs_to :user
+  has_many :user_beverages
+  has_many :users, through: :user_beverages
 
-  validates :name, presence: true
+  has_many :beverage_alcohols
+  has_many :alcohols, through: :beverage_alcohols
 
-  def self.choices
-    Beverage.all.reduce([]) do |choices, beverage|
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
+
+  scope :contains, (lambda do |alcohols|
+    distinct
+      .joins(:beverage_alcohols)
+      .where(beverage_alcohols: { alcohol: alcohols })
+      .order(:name)
+  end)
+
+  def self.choices(beverages = Beverage.all)
+    beverages.reduce([]) do |choices, beverage|
       choices << { name: beverage.name, value: beverage }
     end
   end
