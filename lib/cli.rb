@@ -168,7 +168,7 @@ class Cli
     success_message = 'successfully crafted and added to your collection'
     success = "#{new_beverage.name} #{success_message}"
     error = new_beverage.errors.full_messages.first
-    puts error ? error.red : success.cyan
+    puts error ? error.red : success.green
   end
 
   def prompt_collect_new_beverage_info
