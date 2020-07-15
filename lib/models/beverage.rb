@@ -14,7 +14,7 @@ class Beverage < ActiveRecord::Base
     distinct
       .joins(:beverage_alcohols)
       .where(beverage_alcohols: { alcohol: alcohols })
-      .order(:name)
+      .order('LOWER(name)')
   end)
 
   def self.choices(beverages = Beverage.all)
