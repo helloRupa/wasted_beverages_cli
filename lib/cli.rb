@@ -161,6 +161,7 @@ class Cli
     new_beverage_info = prompt_collect_new_beverage_info
     new_beverage_info[:users] = [@user]
     new_beverage = Beverage.create(new_beverage_info)
+    progress_bar('Pouring')
     display_success_or_error(new_beverage)
   end
 
