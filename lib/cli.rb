@@ -6,6 +6,17 @@ require_relative './modules/hooks'
 class Cli
   extend Hooks
 
+  before_action(
+    %i[
+      welcome
+      sign_up_or_log_in
+      main_menu
+      select_alcohols
+      select_beverage
+      craft_beverage
+    ]
+  ) { App.banner }
+
   def tty_prompt
     # help_color = Pastel.new.italic.bright_yellow.detach
     TTY::Prompt.new(
@@ -190,16 +201,4 @@ class Cli
     puts 'Go drunk you\'re home!'.cyan
     'exit'
   end
-
-  # before(instance_methods(false))
-  before(
-    %i[
-      welcome
-      sign_up_or_log_in
-      main_menu
-      select_alcohols
-      select_beverage
-      craft_beverage
-    ]
-  )
 end
