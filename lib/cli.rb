@@ -170,10 +170,14 @@ class Cli
   def craft_beverage
     @prompt.say('Craft your beverage', color: :cyan)
     new_beverage_info = prompt_collect_new_beverage_info
-    new_beverage_info[:users] = [@user]
-    new_beverage = Beverage.create(new_beverage_info)
-    progress_bar('Pouring')
-    display_success_or_error(new_beverage)
+    if new_beverage_info
+      new_beverage_info[:users] = [@user]
+      new_beverage = Beverage.create(new_beverage_info)
+      progress_bar('Pouring')
+      display_success_or_error(new_beverage)
+    else
+      puts 'Beverage name has already been taken'.red
+    end
   end
 
   def display_success_or_error(new_beverage)
@@ -185,7 +189,9 @@ class Cli
 
   def prompt_collect_new_beverage_info
     @prompt.collect do
-      key(:name).ask('Name?', required: true)
+      name = key(:name).ask('Name?', required: true)
+      break if Beverage.find_by(name: name)
+
       key(:strength).ask(
         'Strength 1-5?', required: true, convert: :int
       ) { |q| q.in('1-5') }
