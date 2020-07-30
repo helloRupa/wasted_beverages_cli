@@ -6,6 +6,10 @@ require_relative './modules/hooks'
 class Cli
   extend Hooks
 
+  def banner
+    App.banner
+  end
+
   before_action(
     %i[
       welcome
