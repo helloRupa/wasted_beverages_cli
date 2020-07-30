@@ -40,9 +40,4 @@ module Hooks
     end
     prepend preceder
   end
-
-  # def self.make_action(action, instance)
-  #   is_sym_or_str = action.is_a?(Symbol) || action.is_a?(String)
-  #   is_sym_or_str ? instance.method(action) : action
-  # end
 end
